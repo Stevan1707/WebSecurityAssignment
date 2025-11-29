@@ -6,95 +6,95 @@ from rsa.key import PublicKey, PrivateKey
 import MathUtils
 
 
-def generate_rsa_keys(bit_length=256):
-    """自主生成密钥参数并封装"""
-    p = MathUtils.generate_prime(bit_length)
-    q = MathUtils.generate_prime(bit_length)
+def generateRsaKeys(bitLength=256):
+    """Generate key parameters and encapsulate them"""
+    p = MathUtils.generatePrime(bitLength)
+    q = MathUtils.generatePrime(bitLength)
     while p == q:
-        q = MathUtils.generate_prime(bit_length)
+        q = MathUtils.generatePrime(bitLength)
 
     n = p * q
     phi = (p - 1) * (q - 1)
 
     e = 65537
     while math.gcd(e, phi) != 1:
-        e = MathUtils.generate_prime(16)
+        e = MathUtils.generatePrime(16)
     d = MathUtils.modinv(e, phi)
 
-    pub_key = PublicKey(n, e)
-    priv_key = PrivateKey(n, e, d, p, q)
+    pubKey = PublicKey(n, e)
+    privKey = PrivateKey(n, e, d, p, q)
 
-    return pub_key, priv_key
+    return pubKey, privKey
 
 
-def rsa_encrypt(public_key, plaintext, is_string=True):
+def rsaEncrypt(publicKey, plaintext, isString=True):
     """
-    添加类型标记位：
-    - is_string=True（字符串）：直接加密字节
-    - is_string=False（整数）：前缀加\x00标记后加密
+    Add type flag:
+    - isString=True (string): encrypt bytes directly
+    - isString=False (integer): prefix with \x00 marker then encrypt
     """
-    max_len = (public_key.n.bit_length() // 8) - 11
+    maxLen = (publicKey.n.bit_length() // 8) - 11
 
-    if is_string:
-        # 字符串：直接加密
-        plain_bytes = plaintext.encode('utf-8')
-        if len(plain_bytes) > max_len:
-            raise ValueError(f"字符串过长，最大支持{max_len}字节（当前{len(plain_bytes)}字节）")
-        data = plain_bytes
+    if isString:
+        # String: encrypt directly
+        plainBytes = plaintext.encode('utf-8')
+        if len(plainBytes) > maxLen:
+            raise ValueError(f"String too long, maximum supported {maxLen} bytes (current {len(plainBytes)} bytes)")
+        data = plainBytes
     else:
-        # 整数：加\x00标记后加密（避免与字符串混淆）
-        byte_len = (plaintext.bit_length() + 7) // 8
-        if byte_len + 1 > max_len:  # +1是标记位长度
-            raise ValueError(f"整数过大，最大支持{max_len - 1}字节（当前{byte_len}字节）")
-        plain_bytes = plaintext.to_bytes(byte_len, byteorder='big')
-        data = b'\x00' + plain_bytes  # 标记位：\x00表示整数
+        # Integer: add \x00 marker then encrypt (avoid confusion with strings)
+        byteLen = (plaintext.bit_length() + 7) // 8
+        if byteLen + 1 > maxLen:  # +1 is the length of the marker
+            raise ValueError(f"Integer too large, maximum supported {maxLen - 1} bytes (current {byteLen} bytes)")
+        plainBytes = plaintext.to_bytes(byteLen, byteorder='big')
+        data = b'\x00' + plainBytes  # Marker: \x00 indicates integer
 
-    return rsa.encrypt(data, public_key)
+    return rsa.encrypt(data, publicKey)
 
 
-def rsa_decrypt(private_key, ciphertext, is_string=True):
-    """根据加密时的类型标记解密"""
+def rsaDecrypt(privateKey, ciphertext, isString=True):
+    """Decrypt based on type marker used during encryption"""
     try:
-        decrypted_bytes = rsa.decrypt(ciphertext, private_key)
+        decryptedBytes = rsa.decrypt(ciphertext, privateKey)
 
-        if is_string:
-            # 解密字符串：直接解码
-            return decrypted_bytes.decode('utf-8')
+        if isString:
+            # Decrypt string: decode directly
+            return decryptedBytes.decode('utf-8')
         else:
-            # 解密整数：去掉前缀标记位后转整数
-            if decrypted_bytes.startswith(b'\x00'):
-                return int.from_bytes(decrypted_bytes[1:], byteorder='big')
+            # Decrypt integer: remove prefix marker and convert to integer
+            if decryptedBytes.startswith(b'\x00'):
+                return int.from_bytes(decryptedBytes[1:], byteorder='big')
             else:
-                # 兼容旧数据（无标记位）
-                return int.from_bytes(decrypted_bytes, byteorder='big')
+                # Compatible with old data (no marker)
+                return int.from_bytes(decryptedBytes, byteorder='big')
 
     except rsa.DecryptionError:
-        raise ValueError("解密失败（密钥不匹配或密文错误）")
+        raise ValueError("Decryption failed (key mismatch or incorrect ciphertext)")
 
 
-# 测试
+# Testing
 if __name__ == "__main__":
-    pub_key, priv_key = generate_rsa_keys(bit_length=256)
-    max_str_len = (pub_key.n.bit_length() // 8) - 11
-    max_int_len = max_str_len - 1
-    print("=== 密钥信息 ===")
-    print(f"字符串最大长度: {max_str_len}字节")
-    print(f"整数最大长度: {max_int_len}字节\n")
+    pubKey, privKey = generateRsaKeys(bitLength=256)
+    maxStrLen = (pubKey.n.bit_length() // 8) - 11
+    maxIntLen = maxStrLen - 1
+    print("=== Key Information ===")
+    print(f"Maximum string length: {maxStrLen} bytes")
+    print(f"Maximum integer length: {maxIntLen} bytes\n")
 
-    # 1. 字符串加解密（指定is_string=True）
-    print("=== 字符串加解密 ===")
-    plain_str = "Hello world"
-    cipher_str = rsa_encrypt(pub_key, plain_str, is_string=True)
-    decrypted_str = rsa_decrypt(priv_key, cipher_str, is_string=True)
-    print(f"明文: {plain_str}")
-    print(f"密文（hex）: {cipher_str.hex()}")
-    print(f"解密结果: {decrypted_str}\n")
+    # 1. String encryption/decryption (specify isString=True)
+    print("=== String Encryption/Decryption ===")
+    plainStr = "Hello world"
+    cipherStr = rsaEncrypt(pubKey, plainStr, isString=True)
+    decryptedStr = rsaDecrypt(privKey, cipherStr, isString=True)
+    print(f"Plaintext: {plainStr}")
+    print(f"Ciphertext (hex): {cipherStr.hex()}")
+    print(f"Decryption result: {decryptedStr}\n")
 
-    # 2. 整数加解密（指定is_string=False）
-    print("=== 整数加解密 ===")
-    plain_int = random.randint(10000,100000)  # 与"RSA"字节相同的整数
-    cipher_int = rsa_encrypt(pub_key, plain_int, is_string=False)
-    decrypted_int = rsa_decrypt(priv_key, cipher_int, is_string=False)
-    print(f"明文: {plain_int}")
-    print(f"密文（hex）: {cipher_int.hex()}")
-    print(f"解密结果: {decrypted_int}")
+    # 2. Integer encryption/decryption (specify isString=False)
+    print("=== Integer Encryption/Decryption ===")
+    plainInt = random.randint(10000,100000)
+    cipherInt = rsaEncrypt(pubKey, plainInt, isString=False)
+    decryptedInt = rsaDecrypt(privKey, cipherInt, isString=False)
+    print(f"Plaintext: {plainInt}")
+    print(f"Ciphertext (hex): {cipherInt.hex()}")
+    print(f"Decryption result: {decryptedInt}")
