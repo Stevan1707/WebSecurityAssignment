@@ -64,7 +64,7 @@ def wienerAttack(publicKey):
 
 if __name__ == "__main__":
     #We first generate the vulnerable RSA keys
-    print("=== Generating RSA keys vulnerable to Wiener attack ===")
+    print("=== Generating RSA keys vulnerable to Wiener attack:")
     pubKeyVuln, privKeyVuln = generateVulnerableRsaKeys(bitLength=128)
     n14 = pubKeyVuln.n ** (1 / 4)
     print(f"Public key (n): {pubKeyVuln.n}")
@@ -73,7 +73,7 @@ if __name__ == "__main__":
     print(f"Wiener condition check: d={privKeyVuln.d} < n^(1/4)/3 ≈ {n14 / 3:.2f} → {privKeyVuln.d < n14 / 3}\n")
 
     # Then encrypt the data
-    print("=== Encrypting test data ===")
+    print("Encrypting test data :")
     testStr = "WienerSuccess"
     testInt = random.randint(10000, 100000)
     cipherStr = RSABasic.rsaEncrypt(pubKeyVuln, testStr, isString=True)
@@ -81,7 +81,7 @@ if __name__ == "__main__":
 
 
     #Executing Wiener attack
-    print("=== Executing Wiener attack ===")
+    print("Executing Wiener attack: ")
     crackedPrivKey = wienerAttack(pubKeyVuln)
     if crackedPrivKey:
         print("###Attack successful!")
@@ -89,7 +89,7 @@ if __name__ == "__main__":
         print(f"Cracked prime (p): {crackedPrivKey.p}")
         print(f"Cracked prime (q): {crackedPrivKey.q}\n")
 
-        print("=== Verifying decryption results ===")
+        print("Verifying decryption results: ")
         decryptedStr = RSABasic.rsaDecrypt(crackedPrivKey, cipherStr, isString=True)
         decryptedInt = RSABasic.rsaDecrypt(crackedPrivKey, cipherInt, isString=False)
         print(f"Decrypted string: {decryptedStr}")

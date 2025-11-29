@@ -7,7 +7,6 @@ import MathUtils
 
 
 def generateRsaKeys(bitLength=256):
-    """Generate key parameters and encapsulate them"""
     p = MathUtils.generatePrime(bitLength)
     q = MathUtils.generatePrime(bitLength)
     while p == q:
@@ -28,11 +27,7 @@ def generateRsaKeys(bitLength=256):
 
 
 def rsaEncrypt(publicKey, plaintext, isString=True):
-    """
-    Add type flag:
-    - isString=True (string): encrypt bytes directly
-    - isString=False (integer): prefix with \x00 marker then encrypt
-    """
+
     maxLen = (publicKey.n.bit_length() // 8) - 11
 
     if isString:
@@ -53,7 +48,6 @@ def rsaEncrypt(publicKey, plaintext, isString=True):
 
 
 def rsaDecrypt(privateKey, ciphertext, isString=True):
-    """Decrypt based on type marker used during encryption"""
     try:
         decryptedBytes = rsa.decrypt(ciphertext, privateKey)
 
@@ -77,12 +71,12 @@ if __name__ == "__main__":
     pubKey, privKey = generateRsaKeys(bitLength=256)
     maxStrLen = (pubKey.n.bit_length() // 8) - 11
     maxIntLen = maxStrLen - 1
-    print("=== Key Information ===")
+    print("Key Information:")
     print(f"Maximum string length: {maxStrLen} bytes")
     print(f"Maximum integer length: {maxIntLen} bytes\n")
 
     # 1. String encryption/decryption (specify isString=True)
-    print("=== String Encryption/Decryption ===")
+    print("String Encryption/Decryption:")
     plainStr = "Hello world"
     cipherStr = rsaEncrypt(pubKey, plainStr, isString=True)
     decryptedStr = rsaDecrypt(privKey, cipherStr, isString=True)
@@ -91,7 +85,7 @@ if __name__ == "__main__":
     print(f"Decryption result: {decryptedStr}\n")
 
     # 2. Integer encryption/decryption (specify isString=False)
-    print("=== Integer Encryption/Decryption ===")
+    print("Integer Encryption/Decryption :")
     plainInt = random.randint(10000,100000)
     cipherInt = rsaEncrypt(pubKey, plainInt, isString=False)
     decryptedInt = rsaDecrypt(privKey, cipherInt, isString=False)

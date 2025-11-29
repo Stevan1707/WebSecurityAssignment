@@ -3,7 +3,7 @@ import random
 
 
 def isPrime(n, k=5):
-    """Miller-Rabin primality test (self-implemented large prime detection)"""
+
     if n <= 1:
         return False
     elif n <= 3:
@@ -32,16 +32,16 @@ def isPrime(n, k=5):
 
 
 def generatePrime(bitLength):
-    """Self-generated large prime of specified bit length"""
+
     while True:
         num = random.getrandbits(bitLength)
-        num |= (1 << (bitLength - 1)) | 1  # Ensure bit length and odd number
+        num |= (1 << (bitLength - 1)) | 1
         if isPrime(num):
             return num
 
 
 def extendedGcd(a, b):
-    """Self-implemented extended Euclidean algorithm"""
+
     if a == 0:
         return b, 0, 1
     else:
@@ -50,17 +50,13 @@ def extendedGcd(a, b):
 
 
 def modinv(a, m):
-    """Calculate modular inverse"""
     g, x, y = extendedGcd(a, m)
     if g != 1:
         raise ValueError('Modular inverse does not exist')
     else:
         return x % m
 
-
-# ====================== Wiener attack specific mathematical functions ======================
 def continuedFraction(a, b):
-    """Calculate continued fraction expansion coefficients of a/b"""
     coeffs = []
     while b != 0:
         q = a // b
@@ -70,7 +66,6 @@ def continuedFraction(a, b):
 
 
 def convergents(coeffs):
-    """Calculate convergents of continued fraction (h/k sequence)"""
     convs = []
     hPrevPrev, hPrev = 0, 1
     kPrevPrev, kPrev = 1, 0
@@ -84,7 +79,6 @@ def convergents(coeffs):
 
 
 def isPerfectSquare(n):
-    """Check if it is a perfect square"""
     if n < 0:
         return False
     sqrtN = math.isqrt(n)
