@@ -1,38 +1,19 @@
-# 密码学实验项目：RSA与Diffie-Hellman算法的实现与分析
+# JC3012 Assignment
 
-## 项目概述
+## Group 48 
 
-本项目实现了RSA加密算法的攻击与防御方法，以及Diffie-Hellman密钥交换协议的实现与安全性分析。
+## Authors:
+- SiCheng Fan  50091053
+- JunKai Feng  50091038
+- Qian Wu  50091060
+- HanLin Chen  50091055
+- FuLong Wei  50091042
 
-## 已完成内容
+### python version: 3.14 
 
-### RSA算法部分
-
-- **攻击方法**：Wiener攻击（针对小私钥d的RSA攻击）
-- **防御方法**：
-  - 抬高私钥d的下界
-  - 拉大素数p和q的差距
-  - 保证公钥e足够大
-
-### D-H算法部分
-
-- **攻击方法**：中间人攻击
-- **防御方法**：认证防御
-
-## 重要说明
-
-**⚠️ 这个文件不要交上去！！！**
-
-## 代码使用说明
-
-### 环境配置
-需要安装以下Python库：
+### python library used:
 - `pycryptodome` 3.23.0
 - `rsa` 4.9.1
 - `sympy` 1.14.1
 
-安装命令：
-```bash
-pip install pycryptodome==3.23.0 rsa==4.9.1 sympy==1.14.1
-```
-## ⭐给写报告的兄弟：如果你发现代码哪个地方跑不动或者哪个地方太AI了，请跟FJK或FSC说。算法设计极大部分参考blackboard上assessment文件夹内的五篇论文，写报告时可参考。
+
